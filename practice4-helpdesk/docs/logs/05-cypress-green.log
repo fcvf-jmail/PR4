@@ -1,0 +1,66 @@
+Warning: The allowCypressEnv configuration option is enabled. This allows any browser code to read values from Cypress.env(). This is insecure and will be removed in a future major version.
+
+1. Replace Cypress.env() calls with cy.env() (for sensitive values) or Cypress.expose() (for public configuration)
+2. Set allowCypressEnv: false in your Cypress configuration to disable Cypress.env()
+
+Learn more: https://on.cypress.io/cypress-env-migration
+
+
+================================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        15.21.2                                                                        │
+  │ Browser:        Electron 138 (headless)                                                        │
+  │ Node Version:   v26.8.2 (/opt/homebrew/Cellar/node/26.8.2/bin/node)                            │
+  │ Specs:          1 found (tickets.cy.js)                                                        │
+  │ Searched:       cypress/e2e/**/*.cy.js                                                         │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  tickets.cy.js                                                                   (1 of 1)
+
+
+  HelpDesk — базовые E2E-проверки
+    ✓ показывает исходные заявки (116ms)
+    ✓ E-01 создаёт заявку через форму и показывает её в списке (1353ms)
+    ✓ E-02 показывает ошибку валидации и не добавляет заявку (968ms)
+    ✓ E-03 поиск без учёта регистра и комбинированная фильтрация (579ms)
+    ✓ E-04 фильтр по приоритету сочетается с категорией (454ms)
+    ✓ E-05 реестр отсортирован: сначала high, затем medium, затем low (60ms)
+    ✓ E-06 переводит заявку в работу и завершает её (210ms)
+    ✓ E-07 HTML из пользовательского ввода остаётся текстом (1329ms)
+
+
+  8 passing (5s)
+
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        8                                                                                │
+  │ Passing:      8                                                                                │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     5 seconds                                                                        │
+  │ Spec Ran:     tickets.cy.js                                                                    │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  tickets.cy.js                            00:05        8        8        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✔  All specs passed!                        00:05        8        8        -        -        -  
+
