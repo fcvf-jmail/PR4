@@ -5,4 +5,7 @@ export class TicketsPage {
   searchFor(text) { cy.get('[data-testid="search"]').clear().type(text); }
   setStatus(status) { cy.get('[data-testid="status-filter"]').select(status); }
   setCategory(category) { cy.get('[data-testid="category-filter"]').select(category); }
+  setPriority(priority) { cy.get('[data-testid="priority-filter"]').select(priority); }
+  itemByTitle(title) { return cy.contains('[data-testid="ticket-item"]', title); }
+  advance(title) { this.itemByTitle(title).find('button[data-id]').click(); }
 }
