@@ -8,11 +8,18 @@ const listMessage = document.querySelector('#list-message');
 const search = document.querySelector('#search');
 const statusFilter = document.querySelector('#filter-status');
 const categoryFilter = document.querySelector('#filter-category');
+const priorityFilter = document.querySelector('#filter-priority');
 
 const statusLabels = { new: 'Новая', in_progress: 'В работе', resolved: 'Завершена' };
 const priorityLabels = { low: 'Низкий', medium: 'Средний', high: 'Высокий' };
 const categoryLabels = { hardware: 'Оборудование', software: 'ПО', network: 'Сеть' };
 let lastRequest = 0;
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (ch) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+  ));
+}
 
 async function loadTickets() {
   const requestId = ++lastRequest;
@@ -20,7 +27,8 @@ async function loadTickets() {
     const query = new URLSearchParams({
       search: search.value,
       status: statusFilter.value,
-      category: categoryFilter.value
+      category: categoryFilter.value,
+      priority: priorityFilter.value
     });
     const response = await fetch(`/api/tickets?${query.toString()}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -34,8 +42,8 @@ async function loadTickets() {
       const action = ticket.status === 'resolved' ? '' :
         `<button data-id="${ticket.id}" data-next="${nextStatus}">${ticket.status === 'new' ? 'В работу' : 'Завершить'}</button>`;
       return `<li class="ticket" data-testid="ticket-item" data-id="${ticket.id}">
-        <h3 class="ticket-title">${ticket.title}</h3>
-        <p class="ticket-description">${ticket.description}</p>
+        <h3 class="ticket-title">${escapeHtml(ticket.title)}</h3>
+        <p class="ticket-description">${escapeHtml(ticket.description)}</p>
         <div class="ticket-meta"><span>${categoryLabels[ticket.category]}</span>
           <span>${priorityLabels[ticket.priority]}</span><span>${statusLabels[ticket.status]}</span></div>
         ${action}
@@ -86,5 +94,5 @@ list.addEventListener('click', async (event) => {
   await loadTickets();
 });
 
-[search, statusFilter, categoryFilter].forEach((element) => element.addEventListener('input', loadTickets));
+[search, statusFilter, categoryFilter, priorityFilter].forEach((element) => element.addEventListener('input', loadTickets));
 loadTickets();

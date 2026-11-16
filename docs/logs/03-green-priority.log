@@ -1,0 +1,30 @@
+FAIL tests/integration/api.test.js
+  ● I: фильтры, поиск, порядок › I-07 порядок: high первым; в одном приоритете новее — выше
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   3,
+        2,
+    +   3,
+      ]
+
+      112 |     const ids = (await list()).items.map((t) => t.id);
+      113 |     expect(ids[0]).toBe(1);
+    > 114 |     expect(ids.slice(1)).toEqual([3, 2]);
+          |                          ^
+      115 |   });
+      116 |
+      117 |   test('I-08 GET /api/tickets?priority=high возвращает только high', async () => {
+
+      at Object.toEqual (tests/integration/api.test.js:114:26)
+
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       1 failed, 47 passed, 48 total
+Snapshots:   0 total
+Time:        0.398 s, estimated 1 s
+Ran all test suites.

@@ -49,22 +49,21 @@ function canChangeStatus(from, to) {
  * В результирующем списке первыми должны идти важные и новые заявки.
  */
 function filterAndSort(tickets, filters = {}) {
-  const search = String(filters.search || '').trim().toLowerCase();
-  const status = String(filters.status || '').trim();
-  const category = String(filters.category || '').trim();
+  const clean = (value) => String(value || '').trim();
+  const search = clean(filters.search).toLowerCase();
+  const { status, category, priority } = {
+    status: clean(filters.status), category: clean(filters.category), priority: clean(filters.priority)
+  };
+  const matchesText = (ticket) => !search ||
+    ticket.title.toLowerCase().includes(search) || ticket.description.toLowerCase().includes(search);
+
   return tickets
-    .filter((ticket) => {
-      if (status && ticket.status !== status) return false;
-      if (category && ticket.category !== category) return false;
-      if (!search) return true;
-      return ticket.title.toLowerCase().includes(search) ||
-        ticket.description.toLowerCase().includes(search);
-    })
-    .sort((a, b) => {
-      const byPriority = PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority];
-      if (byPriority !== 0) return byPriority;
-      return b.createdAt.localeCompare(a.createdAt);
-    });
+    .filter((ticket) => (!status || ticket.status === status) &&
+      (!category || ticket.category === category) &&
+      (!priority || ticket.priority === priority) &&
+      matchesText(ticket))
+    .sort((a, b) => (PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority]) ||
+      b.createdAt.localeCompare(a.createdAt));
 }
 
 module.exports = {

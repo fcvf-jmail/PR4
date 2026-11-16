@@ -93,9 +93,13 @@ describe('I: создание и чтение', () => {
 });
 
 describe('I: фильтры, поиск, порядок', () => {
+  // createdAt имеет точность до мс: без паузы заявки получают одинаковое время и порядок не определён.
+  const tick = () => new Promise((resolve) => setTimeout(resolve, 5));
   async function seedThree() {
     await post('/api/tickets', valid({ title: 'Сеть недоступна', category: 'network', priority: 'high' }));
+    await tick();
     await post('/api/tickets', valid({ title: 'Принтер сеть', category: 'hardware', priority: 'low' }));
+    await tick();
     await post('/api/tickets', valid({ title: 'Сеть Wi-Fi', category: 'network', priority: 'low' }));
     await patch('/api/tickets/3/status', { status: 'in_progress' });
   }
