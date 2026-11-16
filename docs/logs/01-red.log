@@ -1,0 +1,309 @@
+FAIL tests/integration/api.test.js
+  ● I: создание и чтение › I-01 созданная заявка видна в GET с теми же данными
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Сбой VPN в корпусе"
+    Received: "Сбой   VPN в корпусе"
+
+      60 |     expect(body.total).toBe(1);
+      61 |     expect(body.items[0]).toEqual(created.ticket);
+    > 62 |     expect(body.items[0].title).toBe('Сбой VPN в корпусе');
+         |                                 ^
+      63 |     expect(body.items[0].status).toBe('new');
+      64 |   });
+      65 |
+
+      at Object.toBe (tests/integration/api.test.js:62:33)
+
+  ● I: создание и чтение › I-04 тема из 4 символов + пробелы отклоняется (400)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 201
+
+      81 |   test('I-04 тема из 4 символов + пробелы отклоняется (400)', async () => {
+      82 |     const res = await post('/api/tickets', valid({ title: '   abcd   ' }));
+    > 83 |     expect(res.status).toBe(400);
+         |                        ^
+      84 |     expect((await list()).total).toBe(0);
+      85 |   });
+      86 |
+
+      at Object.toBe (tests/integration/api.test.js:83:24)
+
+  ● I: фильтры, поиск, порядок › I-06 search + status + category одновременно (AND), регистр не важен
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      104 |     await seedThree();
+      105 |     const body = await list('?search=%20%D0%A1%D0%95%D0%A2%D0%AC%20&status=in_progress&category=network');
+    > 106 |     expect(body.total).toBe(1);
+          |                        ^
+      107 |     expect(body.items[0].id).toBe(3);
+      108 |   });
+      109 |
+
+      at Object.toBe (tests/integration/api.test.js:106:24)
+
+  ● I: фильтры, поиск, порядок › I-07 порядок: high первым; в одном приоритете новее — выше
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 3
+
+      111 |     await seedThree();
+      112 |     const ids = (await list()).items.map((t) => t.id);
+    > 113 |     expect(ids[0]).toBe(1);
+          |                    ^
+      114 |     expect(ids.slice(1)).toEqual([3, 2]);
+      115 |   });
+      116 |
+
+      at Object.toBe (tests/integration/api.test.js:113:20)
+
+  ● I: фильтры, поиск, порядок › I-08 GET /api/tickets?priority=high возвращает только high
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 3
+
+      118 |     await seedThree();
+      119 |     const body = await list('?priority=high');
+    > 120 |     expect(body.total).toBe(1);
+          |                        ^
+      121 |     expect(body.items.every((t) => t.priority === 'high')).toBe(true);
+      122 |   });
+      123 |
+
+      at Object.toBe (tests/integration/api.test.js:120:24)
+
+  ● I: смена статуса (400 / 404 / 409 / 200) › I-11 пропуск этапа new → resolved: 409 и статус не изменился
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 409
+    Received: 200
+
+      143 |   test('I-11 пропуск этапа new → resolved: 409 и статус не изменился', async () => {
+      144 |     const res = await patch('/api/tickets/1/status', { status: 'resolved' });
+    > 145 |     expect(res.status).toBe(409);
+          |                        ^
+      146 |     expect((await list()).items[0].status).toBe('new');
+      147 |   });
+      148 |
+
+      at Object.toBe (tests/integration/api.test.js:145:24)
+
+FAIL tests/unit/core.test.js
+  ● U: нормализация темы (требование «Тема») › U-01 U-02 схлопывает любые последовательности пробельных символов
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Сбой принтера"
+    Received: "Сбой   принтера"
+
+      32 | describe('U: нормализация темы (требование «Тема»)', () => {
+      33 |   test('U-01 U-02 схлопывает любые последовательности пробельных символов', () => {
+    > 34 |     expect(normalizeTitle('Сбой   принтера')).toBe('Сбой принтера');
+         |                                               ^
+      35 |     expect(normalizeTitle('  Сбой \t\n  принтера  в   аудитории ')).toBe('Сбой принтера в аудитории');
+      36 |   });
+      37 |
+
+      at Object.toBe (tests/unit/core.test.js:34:47)
+
+  ● U: валидация длины темы — границы 5 и 80 (после нормализации) › U-04 4 символа + пробелы по краям
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      53 |   ])('U-04 %s', (_name, title, hasError) => {
+      54 |     const errors = validateTicketInput({ ...validBase, title });
+    > 55 |     expect(Object.prototype.hasOwnProperty.call(errors, 'title')).toBe(hasError);
+         |                                                                   ^
+      56 |   });
+      57 | });
+      58 |
+
+      at toBe (tests/unit/core.test.js:55:67)
+
+  ● U: валидация длины темы — границы 5 и 80 (после нормализации) › U-04 5 символов только за счёт повторных пробелов
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      53 |   ])('U-04 %s', (_name, title, hasError) => {
+      54 |     const errors = validateTicketInput({ ...validBase, title });
+    > 55 |     expect(Object.prototype.hasOwnProperty.call(errors, 'title')).toBe(hasError);
+         |                                                                   ^
+      56 |   });
+      57 | });
+      58 |
+
+      at toBe (tests/unit/core.test.js:55:67)
+
+  ● U: переходы статусов › U-07 new → resolved: false
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      86 |     ['new', 'bogus', false]
+      87 |   ])('U-07 %s → %s: %s', (from, to, allowed) => {
+    > 88 |     expect(canChangeStatus(from, to)).toBe(allowed);
+         |                                       ^
+      89 |   });
+      90 | });
+      91 |
+
+      at toBe (tests/unit/core.test.js:88:39)
+
+  ● U: поиск › U-08 поиск не учитывает регистр (тема ИЛИ описание)
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 0
+
+      Array [
+    -   1,
+        2,
+      ]
+
+       97 |
+       98 |   test('U-08 поиск не учитывает регистр (тема ИЛИ описание)', () => {
+    >  99 |     expect(filterAndSort(data, { search: 'vpn' }).map((t) => t.id).sort()).toEqual([1, 2]);
+          |                                                                            ^
+      100 |     expect(filterAndSort(data, { search: 'ПРИНТЕР' }).map((t) => t.id)).toEqual([2]);
+      101 |   });
+      102 |
+
+      at Object.toEqual (tests/unit/core.test.js:99:76)
+
+  ● U: поиск › U-09 поисковая строка обрезается по краям
+
+    expect(received).toHaveLength(expected)
+
+    Expected length: 1
+    Received length: 0
+    Received array:  []
+
+      102 |
+      103 |   test('U-09 поисковая строка обрезается по краям', () => {
+    > 104 |     expect(filterAndSort(data, { search: '  принтер  ' })).toHaveLength(1);
+          |                                                            ^
+      105 |   });
+      106 |
+      107 |   test('U-10 фильтры объединяются через AND', () => {
+
+      at Object.toHaveLength (tests/unit/core.test.js:104:60)
+
+  ● U: поиск › U-10 фильтры объединяются через AND
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   1,
+    - ]
+    + Array []
+
+      112 |     ];
+      113 |     const res = filterAndSort(t, { search: 'сеть', status: 'new', category: 'network' });
+    > 114 |     expect(res.map((x) => x.id)).toEqual([1]);
+          |                                  ^
+      115 |   });
+      116 | });
+      117 |
+
+      at Object.toEqual (tests/unit/core.test.js:114:34)
+
+  ● U: сортировка реестра › U-11 сначала high, затем medium, затем low
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Array [
+    -   "high",
+    -   "medium",
+        "low",
+    +   "medium",
+    +   "high",
+      ]
+
+      123 |       mk(3, 'medium', '2026-10-01T00:00:00.000Z')
+      124 |     ]);
+    > 125 |     expect(res.map((t) => t.priority)).toEqual(['high', 'medium', 'low']);
+          |                                        ^
+      126 |   });
+      127 |
+      128 |   test('U-12 в пределах приоритета новые createdAt выше', () => {
+
+      at Object.toEqual (tests/unit/core.test.js:125:40)
+
+  ● U: фильтр по приоритету (задание A, TDD) › U-14 фильтрует по priority
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 1
+
+      Array [
+    +   2,
+        3,
+        1,
+      ]
+
+      149 |   ];
+      150 |   test('U-14 фильтрует по priority', () => {
+    > 151 |     expect(filterAndSort(t, { priority: 'high' }).map((x) => x.id)).toEqual([3, 1]);
+          |                                                                     ^
+      152 |   });
+      153 |   test('U-15 priority сочетается с category (AND)', () => {
+      154 |     expect(filterAndSort(t, { priority: 'high', category: 'network' }).map((x) => x.id)).toEqual([1]);
+
+      at Object.toEqual (tests/unit/core.test.js:151:69)
+
+  ● U: фильтр по приоритету (задание A, TDD) › U-15 priority сочетается с category (AND)
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 1
+
+      Array [
+    +   2,
+        1,
+      ]
+
+      152 |   });
+      153 |   test('U-15 priority сочетается с category (AND)', () => {
+    > 154 |     expect(filterAndSort(t, { priority: 'high', category: 'network' }).map((x) => x.id)).toEqual([1]);
+          |                                                                                          ^
+      155 |   });
+      156 | });
+      157 |
+
+      at Object.toEqual (tests/unit/core.test.js:154:90)
+
+Test Suites: 2 failed, 2 total
+Tests:       16 failed, 32 passed, 48 total
+Snapshots:   0 total
+Time:        0.411 s, estimated 1 s
+Ran all test suites.
